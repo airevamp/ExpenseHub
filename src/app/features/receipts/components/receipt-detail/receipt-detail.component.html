@@ -1,0 +1,88 @@
+<div class="receipt-detail">
+  <header class="detail-header">
+    <button class="btn btn-icon" (click)="goBack()" aria-label="Go back">
+      ← Back
+    </button>
+    <div class="header-actions">
+      <a [routerLink]="['/receipts', id(), 'edit']" class="btn btn-primary">
+        Edit
+      </a>
+      <button class="btn btn-danger" (click)="deleteReceipt()">
+        Delete
+      </button>
+    </div>
+  </header>
+
+  @if (isLoading()) {
+    <div class="loading-state">
+      <div class="spinner-lg"></div>
+    </div>
+  }
+
+  @if (!isLoading() && !receipt()) {
+    <div class="error-state">
+      <p>Receipt not found</p>
+      <button class="btn btn-primary" (click)="goBack()">Go Back</button>
+    </div>
+  }
+
+  @if (receipt(); as r) {
+    <div class="receipt-content">
+      <div class="receipt-image-container">
+        <img [src]="getReceiptImage()" alt="Receipt" class="receipt-image" />
+      </div>
+
+      <div class="receipt-info">
+        <div class="info-section">
+          <h1 class="merchant-name">{{ r.merchantName || 'Unknown Merchant' }}</h1>
+          <div class="status-row">
+            <span class="status-badge" [class]="'status-' + r.syncStatus">
+              {{ r.syncStatus === 'synced' ? 'Synced' : 'Pending sync' }}
+            </span>
+            @if (r.ocrStatus !== 'completed') {
+              <span class="status-badge" [class]="'ocr-' + r.ocrStatus">
+                OCR: {{ r.ocrStatus }}
+              </span>
+            }
+          </div>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <label>Date</label>
+            <span>{{ formatDate(r.transactionDate) }}</span>
+          </div>
+
+          <div class="info-item">
+            <label>Amount</label>
+            <span class="amount">{{ formatAmount(r.totalAmount, r.currency) }}</span>
+          </div>
+
+          <div class="info-item">
+            <label>Category</label>
+            <span>{{ r.category || 'Uncategorized' }}</span>
+          </div>
+
+          <div class="info-item">
+            <label>Currency</label>
+            <span>{{ r.currency || 'USD' }}</span>
+          </div>
+        </div>
+
+        @if (r.description) {
+          <div class="info-section">
+            <label>Description</label>
+            <p class="description">{{ r.description }}</p>
+          </div>
+        }
+
+        <div class="info-section metadata">
+          <label>Created</label>
+          <span>{{ formatDate(r.createdAt) }}</span>
+          <label>Last Updated</label>
+          <span>{{ formatDate(r.updatedAt) }}</span>
+        </div>
+      </div>
+    </div>
+  }
+</div>

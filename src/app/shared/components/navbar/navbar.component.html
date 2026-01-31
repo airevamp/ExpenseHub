@@ -1,0 +1,51 @@
+<nav class="navbar">
+  <div class="navbar-brand">
+    <a routerLink="/" class="logo">
+      <span class="logo-icon">💰</span>
+      <span class="logo-text">ExpenseHub</span>
+    </a>
+  </div>
+
+  @if (isAuthenticated()) {
+    <div class="navbar-menu">
+      <a routerLink="/dashboard" routerLinkActive="active" class="nav-link">
+        Dashboard
+      </a>
+      <a routerLink="/receipts" routerLinkActive="active" class="nav-link">
+        Receipts
+      </a>
+      <a routerLink="/time" routerLinkActive="active" class="nav-link">
+        Time
+      </a>
+    </div>
+  }
+
+  <div class="navbar-end">
+    <!-- Connectivity Status -->
+    @if (connectivity.isOffline()) {
+      <span class="status-badge offline" title="Offline">
+        <span class="status-dot"></span>
+        Offline
+      </span>
+    }
+
+    @if (syncService.pendingChangesCount() > 0) {
+      <span class="status-badge pending" title="Pending changes">
+        {{ syncService.pendingChangesCount() }} pending
+      </span>
+    }
+
+    @if (isAuthenticated()) {
+      <div class="user-menu">
+        <span class="user-name">{{ currentUser()?.displayName }}</span>
+        <button class="btn btn-text" (click)="logout()">
+          Sign Out
+        </button>
+      </div>
+    } @else {
+      <button class="btn btn-primary" (click)="login()">
+        Sign In
+      </button>
+    }
+  </div>
+</nav>

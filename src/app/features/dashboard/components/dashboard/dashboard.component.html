@@ -1,0 +1,171 @@
+<div class="dashboard">
+  <header class="dashboard-header">
+    <div class="greeting">
+      <h1>{{ getGreeting() }}, {{ (currentUser()?.displayName?.split(' ') || [])[0] || 'there' }}</h1>
+      <p class="date">{{ 'today' | date:'fullDate' }}</p>
+    </div>
+    <button
+      class="btn btn-icon"
+      (click)="refresh()"
+      [disabled]="isLoading() || !connectivity.isOnline()"
+    >
+      @if (syncService.syncState() === 'syncing') {
+        <span class="spinner"></span>
+      } @else {
+        <span class="icon">🔄</span>
+      }
+    </button>
+  </header>
+
+  <!-- Summary Cards -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon expenses">💰</div>
+      <div class="stat-content">
+        <h3>Total Expenses</h3>
+        <p class="stat-value">{{ formatCurrency(totalExpenses()) }}</p>
+        <span class="stat-label">{{ receipts().length }} receipts</span>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon hours">⏱️</div>
+      <div class="stat-content">
+        <h3>This Week</h3>
+        <p class="stat-value">{{ weeklyHours() }}h</p>
+        <span class="stat-label">hours logged</span>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon pending">📋</div>
+      <div class="stat-content">
+        <h3>Pending</h3>
+        <p class="stat-value">{{ pendingReceipts() }}</p>
+        <span class="stat-label">receipts processing</span>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon sync">🔄</div>
+      <div class="stat-content">
+        <h3>Sync Status</h3>
+        <p class="stat-value">
+          @if (syncService.pendingChangesCount() === 0) {
+            All synced
+          } @else {
+            {{ syncService.pendingChangesCount() }} pending
+          }
+        </p>
+        <span class="stat-label">
+          @if (syncService.lastSyncTime()) {
+            Last: {{ syncService.lastSyncTime() | date:'shortTime' }}
+          } @else {
+            Never synced
+          }
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="quick-actions">
+    <a routerLink="/receipts/capture" class="action-card">
+      <span class="action-icon">📷</span>
+      <span class="action-label">Capture Receipt</span>
+    </a>
+    <a routerLink="/time" class="action-card">
+      <span class="action-icon">⏰</span>
+      <span class="action-label">Log Time</span>
+    </a>
+  </div>
+
+  <!-- Recent Activity -->
+  <div class="activity-section">
+    <div class="activity-column">
+      <div class="section-header">
+        <h2>Recent Receipts</h2>
+        <a routerLink="/receipts" class="view-all">View all →</a>
+      </div>
+
+      @if (isLoading()) {
+        <div class="skeleton-list">
+          @for (i of [1, 2, 3]; track i) {
+            <div class="skeleton-item">
+              <div class="skeleton skeleton-avatar"></div>
+              <div class="skeleton-content">
+                <div class="skeleton skeleton-title"></div>
+                <div class="skeleton skeleton-text"></div>
+              </div>
+            </div>
+          }
+        </div>
+      } @else if (recentReceipts().length === 0) {
+        <div class="empty-list">
+          <p>No receipts yet</p>
+          <a routerLink="/receipts/capture" class="btn btn-sm">Add receipt</a>
+        </div>
+      } @else {
+        <div class="activity-list">
+          @for (receipt of recentReceipts(); track receipt.id) {
+            <a [routerLink]="['/receipts', receipt.id]" class="activity-item">
+              <div class="item-icon receipt">🧾</div>
+              <div class="item-content">
+                <p class="item-title">{{ receipt.merchantName || 'Unknown Merchant' }}</p>
+                <p class="item-meta">
+                  {{ formatCurrency(receipt.totalAmount || 0) }} · {{ formatDate(receipt.createdAt) }}
+                </p>
+              </div>
+              @if (receipt.syncStatus === 'pending_sync') {
+                <span class="pending-badge">Pending</span>
+              }
+            </a>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="activity-column">
+      <div class="section-header">
+        <h2>Recent Time Entries</h2>
+        <a routerLink="/time" class="view-all">View all →</a>
+      </div>
+
+      @if (isLoading()) {
+        <div class="skeleton-list">
+          @for (i of [1, 2, 3]; track i) {
+            <div class="skeleton-item">
+              <div class="skeleton skeleton-avatar"></div>
+              <div class="skeleton-content">
+                <div class="skeleton skeleton-title"></div>
+                <div class="skeleton skeleton-text"></div>
+              </div>
+            </div>
+          }
+        </div>
+      } @else if (recentTimeEntries().length === 0) {
+        <div class="empty-list">
+          <p>No time entries yet</p>
+          <a routerLink="/time" class="btn btn-sm">Log time</a>
+        </div>
+      } @else {
+        <div class="activity-list">
+          @for (entry of recentTimeEntries(); track entry.id) {
+            <div class="activity-item">
+              <div class="item-icon time">⏱️</div>
+              <div class="item-content">
+                <p class="item-title">{{ entry.hours }}h - {{ entry.description }}</p>
+                <p class="item-meta">
+                  {{ entry.project || 'No project' }} · {{ formatDate(entry.date) }}
+                </p>
+              </div>
+              @if (entry.syncStatus === 'pending_sync') {
+                <span class="pending-badge">Pending</span>
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </div>
+</div>

@@ -1,0 +1,115 @@
+<div class="receipt-edit">
+  <header class="edit-header">
+    <h1>Edit Receipt</h1>
+  </header>
+
+  @if (isLoading()) {
+    <div class="loading-state">
+      <div class="spinner-lg"></div>
+    </div>
+  }
+
+  @if (!isLoading() && !receipt()) {
+    <div class="error-state">
+      <p>Receipt not found</p>
+      <button class="btn btn-primary" (click)="cancel()">Go Back</button>
+    </div>
+  }
+
+  @if (receipt()) {
+    <div class="edit-content">
+      <div class="receipt-preview">
+        <img [src]="getReceiptImage()" alt="Receipt" />
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="save()" class="edit-form">
+        <div class="form-group">
+          <label for="merchantName">Merchant Name *</label>
+          <input
+            id="merchantName"
+            type="text"
+            formControlName="merchantName"
+            placeholder="e.g., Starbucks"
+          />
+          @if (form.get('merchantName')?.invalid && form.get('merchantName')?.touched) {
+            <span class="error">Merchant name is required</span>
+          }
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="transactionDate">Date</label>
+            <input
+              id="transactionDate"
+              type="date"
+              formControlName="transactionDate"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="totalAmount">Amount</label>
+            <input
+              id="totalAmount"
+              type="number"
+              step="0.01"
+              formControlName="totalAmount"
+              placeholder="0.00"
+            />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="currency">Currency</label>
+            <select id="currency" formControlName="currency">
+              <option value="USD">USD ($)</option>
+              <option value="EUR">EUR (€)</option>
+              <option value="GBP">GBP (£)</option>
+              <option value="CAD">CAD ($)</option>
+              <option value="AUD">AUD ($)</option>
+              <option value="JPY">JPY (¥)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="category">Category</label>
+            <select id="category" formControlName="category">
+              <option value="">Select category</option>
+              @for (cat of categories; track cat) {
+                <option [value]="cat">{{ cat }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="description">Description</label>
+          <textarea
+            id="description"
+            formControlName="description"
+            rows="3"
+            placeholder="Add notes about this expense..."
+          ></textarea>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" (click)="cancel()">
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="form.invalid || isSaving()"
+          >
+            @if (isSaving()) {
+              <span class="spinner"></span>
+              Saving...
+            } @else {
+              Save Changes
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+  }
+</div>

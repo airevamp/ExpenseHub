@@ -1,0 +1,83 @@
+<form [formGroup]="form" (ngSubmit)="save()" class="time-entry-form">
+  <h2>{{ editEntry() ? 'Edit Time Entry' : 'Log Time' }}</h2>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label for="date">Date *</label>
+      <input
+        id="date"
+        type="date"
+        formControlName="date"
+      />
+      @if (form.get('date')?.invalid && form.get('date')?.touched) {
+        <span class="error">Date is required</span>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="hours">Hours *</label>
+      <input
+        id="hours"
+        type="number"
+        step="0.25"
+        min="0.25"
+        max="24"
+        formControlName="hours"
+        placeholder="0.00"
+      />
+      <div class="quick-hours">
+        <button type="button" class="quick-btn" (click)="setQuickHours(0.5)">0.5h</button>
+        <button type="button" class="quick-btn" (click)="setQuickHours(1)">1h</button>
+        <button type="button" class="quick-btn" (click)="setQuickHours(2)">2h</button>
+        <button type="button" class="quick-btn" (click)="setQuickHours(4)">4h</button>
+        <button type="button" class="quick-btn" (click)="setQuickHours(8)">8h</button>
+      </div>
+      @if (form.get('hours')?.invalid && form.get('hours')?.touched) {
+        <span class="error">Enter a valid number of hours (0.25 - 24)</span>
+      }
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="project">Project</label>
+    <input
+      id="project"
+      type="text"
+      formControlName="project"
+      placeholder="e.g., Client Project A"
+    />
+  </div>
+
+  <div class="form-group">
+    <label for="description">Description *</label>
+    <textarea
+      id="description"
+      formControlName="description"
+      rows="3"
+      placeholder="What did you work on?"
+    ></textarea>
+    @if (form.get('description')?.invalid && form.get('description')?.touched) {
+      <span class="error">Description is required</span>
+    }
+  </div>
+
+  <div class="form-actions">
+    @if (editEntry()) {
+      <button type="button" class="btn btn-secondary" (click)="cancel()">
+        Cancel
+      </button>
+    }
+    <button
+      type="submit"
+      class="btn btn-primary"
+      [disabled]="form.invalid || isSaving()"
+    >
+      @if (isSaving()) {
+        <span class="spinner"></span>
+        Saving...
+      } @else {
+        {{ editEntry() ? 'Update Entry' : 'Log Time' }}
+      }
+    </button>
+  </div>
+</form>

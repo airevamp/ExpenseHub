@@ -1,0 +1,184 @@
+import { Component, inject, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+import { AuthService } from '../../core/auth';
+
+@Component({
+  selector: 'app-login',
+  standalone: true,
+  imports: [CommonModule],
+  template: `
+    <div class="login-page">
+      <div class="login-card">
+        <div class="logo">
+          <span class="logo-icon">💰</span>
+          <h1>ExpenseHub</h1>
+        </div>
+
+        <p class="tagline">Track expenses, log time, stay organized</p>
+
+        <div class="features">
+          <div class="feature">
+            <span class="feature-icon">📷</span>
+            <span>Capture receipts with your camera</span>
+          </div>
+          <div class="feature">
+            <span class="feature-icon">🤖</span>
+            <span>Automatic OCR data extraction</span>
+          </div>
+          <div class="feature">
+            <span class="feature-icon">⏱️</span>
+            <span>Log work hours easily</span>
+          </div>
+          <div class="feature">
+            <span class="feature-icon">📡</span>
+            <span>Works offline, syncs when online</span>
+          </div>
+        </div>
+
+        <button class="btn btn-primary btn-lg" (click)="login()" [disabled]="isLoading()">
+          @if (isLoading()) {
+            <span class="spinner"></span>
+            Signing in...
+          } @else {
+            Sign in with Microsoft
+          }
+        </button>
+      </div>
+    </div>
+  `,
+  styles: [`
+    .login-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .login-card {
+      background: white;
+      border-radius: 16px;
+      padding: 2.5rem;
+      max-width: 400px;
+      width: 100%;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+      text-align: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      margin-bottom: 0.5rem;
+
+      .logo-icon {
+        font-size: 2.5rem;
+      }
+
+      h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0;
+        color: #1f2937;
+      }
+    }
+
+    .tagline {
+      color: #6b7280;
+      margin: 0 0 2rem;
+    }
+
+    .features {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+      text-align: left;
+    }
+
+    .feature {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem;
+      background: #f9fafb;
+      border-radius: 8px;
+
+      .feature-icon {
+        font-size: 1.25rem;
+      }
+
+      span:last-child {
+        font-size: 0.875rem;
+        color: #374151;
+      }
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all 0.2s;
+      width: 100%;
+
+      &:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+      }
+    }
+
+    .btn-primary {
+      background: #2563eb;
+      color: white;
+
+      &:hover:not(:disabled) {
+        background: #1d4ed8;
+      }
+    }
+
+    .btn-lg {
+      padding: 1rem 2rem;
+      font-size: 1.125rem;
+    }
+
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  `]
+})
+export class LoginComponent implements OnInit {
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+
+  readonly isLoading = this.authService.isLoading;
+
+  ngOnInit(): void {
+    // If already authenticated, redirect to dashboard
+    if (this.authService.isAuthenticated()) {
+      this.router.navigate(['/dashboard']);
+    }
+  }
+
+  login(): void {
+    this.authService.login();
+  }
+}

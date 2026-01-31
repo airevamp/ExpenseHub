@@ -1,0 +1,79 @@
+<div class="receipt-list-container">
+  <header class="list-header">
+    <h1>Receipts</h1>
+    <div class="header-actions">
+      <button class="btn btn-icon" (click)="refresh()" [disabled]="isLoading() || !connectivity.isOnline()">
+        @if (syncState() === 'syncing') {
+          <span class="spinner"></span>
+        } @else {
+          <span class="icon">🔄</span>
+        }
+      </button>
+      <a routerLink="/receipts/capture" class="btn btn-primary">
+        <span class="icon">+</span>
+        Add Receipt
+      </a>
+    </div>
+  </header>
+
+  @if (isLoading() && receipts().length === 0) {
+    <div class="loading-state">
+      <div class="skeleton-card" *ngFor="let i of [1,2,3]">
+        <div class="skeleton skeleton-image"></div>
+        <div class="skeleton-content">
+          <div class="skeleton skeleton-title"></div>
+          <div class="skeleton skeleton-text"></div>
+          <div class="skeleton skeleton-text short"></div>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (error()) {
+    <div class="error-state">
+      <p>{{ error() }}</p>
+      <button class="btn btn-primary" (click)="loadReceipts()">Retry</button>
+    </div>
+  }
+
+  @if (!isLoading() && receipts().length === 0 && !error()) {
+    <div class="empty-state">
+      <div class="empty-icon">🧾</div>
+      <h2>No receipts yet</h2>
+      <p>Capture your first receipt to get started</p>
+      <a routerLink="/receipts/capture" class="btn btn-primary btn-lg">
+        Add Your First Receipt
+      </a>
+    </div>
+  }
+
+  @if (receipts().length > 0) {
+    <div class="receipt-grid">
+      @for (receipt of receipts(); track receipt.id) {
+        <a [routerLink]="['/receipts', receipt.id]" class="receipt-card">
+          <div class="receipt-image">
+            <img [src]="getReceiptImage(receipt)" alt="Receipt" loading="lazy" />
+            <span class="status-badge" [class]="getStatusClass(receipt)">
+              {{ getStatusText(receipt) }}
+            </span>
+          </div>
+          <div class="receipt-info">
+            <h3 class="merchant-name">{{ receipt.merchantName || 'Unknown Merchant' }}</h3>
+            <p class="receipt-date">{{ formatDate(receipt.transactionDate) }}</p>
+            <p class="receipt-amount">{{ formatAmount(receipt.totalAmount, receipt.currency) }}</p>
+            @if (receipt.category) {
+              <span class="category-badge">{{ receipt.category }}</span>
+            }
+          </div>
+          <button
+            class="btn btn-icon delete-btn"
+            (click)="deleteReceipt(receipt.id, $event)"
+            aria-label="Delete receipt"
+          >
+            🗑️
+          </button>
+        </a>
+      }
+    </div>
+  }
+</div>

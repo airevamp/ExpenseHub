@@ -1,0 +1,31 @@
+{
+  "name": "expensehub-api",
+  "version": "1.0.0",
+  "description": "ExpenseHub Azure Functions API",
+  "main": "dist/src/functions/*.js",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "clean": "rimraf dist",
+    "prestart": "npm run clean && npm run build",
+    "start": "func start",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@azure/ai-form-recognizer": "^5.0.0",
+    "@azure/data-tables": "^13.2.2",
+    "@azure/functions": "^4.5.0",
+    "@azure/storage-blob": "^12.17.0",
+    "uuid": "^13.0.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.0",
+    "@types/node": "^20.x",
+    "@types/uuid": "^11.0.0",
+    "azure-functions-core-tools": "^4.x",
+    "jest": "^29.7.0",
+    "rimraf": "^5.0.5",
+    "ts-jest": "^29.1.0",
+    "typescript": "^5.4.0"
+  }
+}

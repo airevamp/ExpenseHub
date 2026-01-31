@@ -1,0 +1,108 @@
+<div class="time-tracking-container">
+  <header class="list-header">
+    <div class="header-content">
+      <h1>Time Tracking</h1>
+      <div class="weekly-summary">
+        <span class="label">This Week:</span>
+        <span class="hours">{{ getWeeklyTotal() }}h</span>
+      </div>
+    </div>
+    <button
+      class="btn btn-icon"
+      (click)="refresh()"
+      [disabled]="isLoading() || !connectivity.isOnline()"
+    >
+      @if (syncState() === 'syncing') {
+        <span class="spinner"></span>
+      } @else {
+        <span class="icon">🔄</span>
+      }
+    </button>
+  </header>
+
+  <!-- Time Entry Form -->
+  @if (showForm()) {
+    <app-time-entry-form
+      [editEntry]="editingEntry()"
+      (saved)="onEntrySaved($event)"
+      (cancelled)="onEditCancelled()"
+    />
+  }
+
+  <!-- Loading State -->
+  @if (isLoading() && timeEntries().length === 0) {
+    <div class="loading-state">
+      <div class="skeleton-group" *ngFor="let i of [1,2]">
+        <div class="skeleton skeleton-header"></div>
+        <div class="skeleton-item" *ngFor="let j of [1,2,3]">
+          <div class="skeleton skeleton-time"></div>
+          <div class="skeleton skeleton-text"></div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (error()) {
+    <div class="error-state">
+      <p>{{ error() }}</p>
+      <button class="btn btn-primary" (click)="loadEntries()">Retry</button>
+    </div>
+  }
+
+  <!-- Empty State -->
+  @if (!isLoading() && timeEntries().length === 0 && !error()) {
+    <div class="empty-state">
+      <div class="empty-icon">⏱️</div>
+      <h2>No time entries yet</h2>
+      <p>Start logging your work hours using the form above</p>
+    </div>
+  }
+
+  <!-- Time Entries List -->
+  @if (timeEntries().length > 0) {
+    <div class="entries-list">
+      @for (group of getGroupedEntries(); track group.date) {
+        <div class="date-group">
+          <div class="date-header">
+            <h3>{{ formatDate(group.date) }}</h3>
+            <span class="day-total">{{ formatHours(group.totalHours) }}</span>
+          </div>
+
+          <div class="entries">
+            @for (entry of group.entries; track entry.id) {
+              <div
+                class="entry-card"
+                [class.pending]="entry.syncStatus === 'pending_sync'"
+                (click)="editEntry(entry)"
+              >
+                <div class="entry-hours">
+                  <span class="hours-value">{{ entry.hours }}</span>
+                  <span class="hours-label">hrs</span>
+                </div>
+
+                <div class="entry-info">
+                  @if (entry.project) {
+                    <span class="project-badge">{{ entry.project }}</span>
+                  }
+                  <p class="description">{{ entry.description }}</p>
+                  @if (entry.syncStatus === 'pending_sync') {
+                    <span class="sync-indicator">Pending sync</span>
+                  }
+                </div>
+
+                <button
+                  class="btn btn-icon delete-btn"
+                  (click)="deleteEntry(entry.id, $event)"
+                  aria-label="Delete entry"
+                >
+                  🗑️
+                </button>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

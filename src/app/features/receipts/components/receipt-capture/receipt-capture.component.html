@@ -1,0 +1,90 @@
+<div class="receipt-capture">
+  <!-- Camera View -->
+  @if (!capturedImage()) {
+    <div class="camera-container">
+      @if (!cameraState().isActive && !cameraState().error) {
+        <div class="camera-placeholder">
+          <button class="btn btn-primary btn-lg" (click)="startCamera()">
+            <span class="icon">📷</span>
+            Start Camera
+          </button>
+          <p class="or-divider">or</p>
+          <label class="btn btn-secondary">
+            <span class="icon">📁</span>
+            Choose File
+            <input
+              type="file"
+              accept="image/*"
+              capture="environment"
+              (change)="handleFileInput($event)"
+              hidden
+            />
+          </label>
+        </div>
+      }
+
+      @if (cameraState().error) {
+        <div class="camera-error">
+          <p class="error-message">{{ cameraState().error }}</p>
+          <label class="btn btn-primary">
+            <span class="icon">📁</span>
+            Choose File Instead
+            <input
+              type="file"
+              accept="image/*"
+              capture="environment"
+              (change)="handleFileInput($event)"
+              hidden
+            />
+          </label>
+        </div>
+      }
+
+      <video
+        #videoElement
+        [class.hidden]="!cameraState().isActive"
+        playsinline
+        autoplay
+        muted
+      ></video>
+
+      @if (cameraState().isActive) {
+        <div class="camera-controls">
+          <button class="btn btn-capture" (click)="capturePhoto()" [disabled]="isCapturing()">
+            @if (isCapturing()) {
+              <span class="spinner"></span>
+            } @else {
+              <span class="capture-icon"></span>
+            }
+          </button>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Preview -->
+  @if (capturedImage()) {
+    <div class="preview-container">
+      <img [src]="capturedImage()" alt="Captured receipt" class="preview-image" />
+
+      <div class="preview-controls">
+        <button class="btn btn-secondary" (click)="retakePhoto()" [disabled]="isUploading()">
+          Retake
+        </button>
+        <button class="btn btn-primary" (click)="saveReceipt()" [disabled]="isUploading()">
+          @if (isUploading()) {
+            <span class="spinner"></span>
+            Saving...
+          } @else {
+            Save Receipt
+          }
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- Cancel Button -->
+  <button class="btn btn-link cancel-btn" (click)="cancel()">
+    Cancel
+  </button>
+</div>
