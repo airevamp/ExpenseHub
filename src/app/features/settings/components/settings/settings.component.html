@@ -1,0 +1,69 @@
+<div class="settings">
+  <header class="settings-header">
+    <h1>Settings</h1>
+  </header>
+
+  <div class="settings-section">
+    <h2>Account</h2>
+    <div class="setting-item">
+      <div class="setting-info">
+        <label>Email</label>
+        <span>{{ authService.currentUser()?.email || 'Not signed in' }}</span>
+      </div>
+    </div>
+    <div class="setting-item">
+      <div class="setting-info">
+        <label>Display Name</label>
+        <span>{{ authService.currentUser()?.displayName || '-' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="settings-section">
+    <h2>Sync</h2>
+    <div class="setting-item">
+      <div class="setting-info">
+        <label>Last Sync</label>
+        <span>{{ syncService.lastSyncTime() | date:'medium' || 'Never' }}</span>
+      </div>
+    </div>
+    <div class="setting-item">
+      <div class="setting-info">
+        <label>Pending Changes</label>
+        <span>{{ syncService.pendingChangesCount() }} items</span>
+      </div>
+      <button class="btn btn-secondary" (click)="forceSync()">
+        Sync Now
+      </button>
+    </div>
+  </div>
+
+  <div class="settings-section">
+    <h2>Data</h2>
+    <div class="setting-item danger">
+      <div class="setting-info">
+        <label>Clear Local Data</label>
+        <span>Remove all locally stored data. Synced data will remain on the server.</span>
+      </div>
+      <button class="btn btn-danger" (click)="clearLocalData()">
+        Clear Data
+      </button>
+    </div>
+  </div>
+
+  <div class="settings-section">
+    <h2>About</h2>
+    <div class="setting-item">
+      <div class="setting-info">
+        <label>Version</label>
+        <span>1.0.0</span>
+      </div>
+    </div>
+    <div class="setting-item">
+      <div class="setting-info">
+        <label>ExpenseHub</label>
+        <span>Business expense tracking with receipt OCR and time logging</span>
+      </div>
+    </div>
+  </div>
+</div>

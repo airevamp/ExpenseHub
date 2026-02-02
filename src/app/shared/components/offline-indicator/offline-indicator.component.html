@@ -1,0 +1,21 @@
+@if (connectivity.isOffline()) {
+  <div class="offline-banner">
+    <span class="icon">📡</span>
+    <span class="message">You're offline. Changes will sync when you're back online.</span>
+  </div>
+}
+
+@if (connectivity.isOnline() && syncService.syncState() === 'syncing') {
+  <div class="syncing-banner">
+    <span class="spinner"></span>
+    <span class="message">Syncing changes...</span>
+  </div>
+}
+
+@if (syncService.syncState() === 'error') {
+  <div class="error-banner">
+    <span class="icon">⚠️</span>
+    <span class="message">{{ syncService.syncError() }}</span>
+    <button class="retry-btn" (click)="retry()">Retry</button>
+  </div>
+}

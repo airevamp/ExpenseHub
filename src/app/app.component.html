@@ -1,0 +1,9 @@
+<div class="app-container">
+  @if (authService.isAuthenticated()) {
+    <app-navbar />
+    <app-offline-indicator />
+  }
+  <main class="main-content" [class.authenticated]="authService.isAuthenticated()">
+    <router-outlet />
+  </main>
+</div>

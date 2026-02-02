@@ -2,7 +2,7 @@
   "name": "expensehub-api",
   "version": "1.0.0",
   "description": "ExpenseHub Azure Functions API",
-  "main": "dist/src/functions/*.js",
+  "main": "dist/src/functions/index.js",
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",

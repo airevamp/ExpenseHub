@@ -1,0 +1,38 @@
+<div class="login-page">
+  <div class="login-card">
+    <div class="logo">
+      <span class="logo-icon">💰</span>
+      <h1>ExpenseHub</h1>
+    </div>
+
+    <p class="tagline">Track expenses, log time, stay organized</p>
+
+    <div class="features">
+      <div class="feature">
+        <span class="feature-icon">📷</span>
+        <span>Capture receipts with your camera</span>
+      </div>
+      <div class="feature">
+        <span class="feature-icon">🤖</span>
+        <span>Automatic OCR data extraction</span>
+      </div>
+      <div class="feature">
+        <span class="feature-icon">⏱️</span>
+        <span>Log work hours easily</span>
+      </div>
+      <div class="feature">
+        <span class="feature-icon">📡</span>
+        <span>Works offline, syncs when online</span>
+      </div>
+    </div>
+
+    <button class="btn btn-primary btn-lg" (click)="login()" [disabled]="isLoading()">
+      @if (isLoading()) {
+        <span class="spinner"></span>
+        Signing in...
+      } @else {
+        Sign in with Microsoft
+      }
+    </button>
+  </div>
+</div>

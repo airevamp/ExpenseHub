@@ -1,0 +1,27 @@
+@switch (type()) {
+  @case ('overlay') {
+    <div class="loading-overlay">
+      <div class="spinner-container">
+        <div class="spinner-lg"></div>
+        @if (message()) {
+          <p class="loading-message">{{ message() }}</p>
+        }
+      </div>
+    </div>
+  }
+  @case ('skeleton') {
+    <div class="skeleton-container">
+      @for (i of skeletonLines(); track i) {
+        <div class="skeleton-line" [style.width]="getRandomWidth()"></div>
+      }
+    </div>
+  }
+  @default {
+    <div class="spinner-inline">
+      <div class="spinner"></div>
+      @if (message()) {
+        <span class="loading-message">{{ message() }}</span>
+      }
+    </div>
+  }
+}

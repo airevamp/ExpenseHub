@@ -1,0 +1,18 @@
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-color, #f9fafb);
+}
+
+.main-content {
+  flex: 1;
+
+  &.authenticated {
+    padding-bottom: env(safe-area-inset-bottom, 0);
+
+    @media (max-width: 640px) {
+      padding-bottom: calc(60px + env(safe-area-inset-bottom, 0));
+    }
+  }
+}

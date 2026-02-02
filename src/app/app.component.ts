@@ -10,37 +10,8 @@ import { AuthService } from './core/auth';
   selector: 'app-root',
   standalone: true,
   imports: [CommonModule, RouterOutlet, NavbarComponent, OfflineIndicatorComponent],
-  template: `
-    <div class="app-container">
-      @if (authService.isAuthenticated()) {
-        <app-navbar />
-        <app-offline-indicator />
-      }
-      <main class="main-content" [class.authenticated]="authService.isAuthenticated()">
-        <router-outlet />
-      </main>
-    </div>
-  `,
-  styles: [`
-    .app-container {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      background: var(--bg-color, #f9fafb);
-    }
-
-    .main-content {
-      flex: 1;
-
-      &.authenticated {
-        padding-bottom: env(safe-area-inset-bottom, 0);
-
-        @media (max-width: 640px) {
-          padding-bottom: calc(60px + env(safe-area-inset-bottom, 0));
-        }
-      }
-    }
-  `]
+  templateUrl: './app.component.html',
+  styleUrl: './app.component.scss'
 })
 export class AppComponent implements OnInit {
   private readonly msalService = inject(MsalService);

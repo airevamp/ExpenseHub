@@ -9,6 +9,7 @@ A Progressive Web App (PWA) for expense management with receipt scanning and tim
 - **Offline-First**: Full functionality offline with automatic background sync when connectivity returns
 - **Dashboard**: Overview of expenses, receipts, and time entries
 - **Authentication**: Secure login via Azure AD B2C
+- **Performance Monitoring**: Built-in decorators for tracking async operation execution times
 
 ## Architecture
 
@@ -58,7 +59,7 @@ A Progressive Web App (PWA) for expense management with receipt scanning and tim
 - **Angular PWA** - Service worker for offline support
 - **Dexie.js** - IndexedDB wrapper for offline storage
 - **MSAL Angular** - Microsoft Authentication Library
-- **SCSS** - Styling
+- **SCSS** - Styling with separate stylesheet files
 
 ### Backend
 - **Azure Functions v4** - Serverless API (Node.js/TypeScript)
@@ -76,22 +77,24 @@ A Progressive Web App (PWA) for expense management with receipt scanning and tim
 ExpenseHub/
 ├── src/                          # Angular frontend
 │   ├── app/
-│   │   ├── core/                 # Core services and models
+│   │   ├── core/                 # Core services, models, and utilities
 │   │   │   ├── auth/             # Authentication (MSAL)
+│   │   │   ├── decorators/       # TypeScript decorators (TrackTime)
 │   │   │   ├── models/           # Data models
 │   │   │   └── services/         # Core services (API, sync, offline)
 │   │   ├── features/             # Feature modules
 │   │   │   ├── dashboard/        # Dashboard view
-│   │   │   ├── receipts/         # Receipt management
+│   │   │   ├── receipts/         # Receipt management (list, capture, edit)
 │   │   │   ├── settings/         # App settings
 │   │   │   └── time-tracking/    # Time entry management
-│   │   ├── pages/                # Page components
-│   │   └── shared/               # Shared components
+│   │   ├── pages/                # Page components (login)
+│   │   └── shared/               # Shared components (navbar, indicators)
 │   ├── assets/                   # Static assets
 │   └── environments/             # Environment configs
 ├── api/                          # Azure Functions backend
 │   └── src/
 │       ├── functions/            # API endpoints
+│       │   ├── index.ts          # Entry point (registers all functions)
 │       │   ├── receipts/         # Receipt API
 │       │   ├── time-entries/     # Time entries API
 │       │   ├── sync/             # Sync API
@@ -184,6 +187,39 @@ cd api && npm start
 - The app works fully offline using IndexedDB storage
 - Changes are queued and synced when connectivity returns
 - The offline indicator shows current status
+
+## Utilities
+
+### TrackTime Decorator
+
+Track execution time of async methods for performance monitoring:
+
+```typescript
+import { TrackTime } from '@app/core/decorators';
+
+class MyService {
+  @TrackTime()
+  async fetchData() {
+    // Logs: [✓] MyService.fetchData: 234.56ms
+  }
+
+  @TrackTime({ label: 'API Call', threshold: 100 })
+  async callApi() {
+    // Only logs if execution exceeds 100ms
+  }
+
+  @TrackTime({ callback: (data) => analytics.track(data) })
+  async processReceipt() {
+    // Sends timing data to custom callback
+  }
+}
+```
+
+**Options:**
+- `label` - Custom label (defaults to ClassName.methodName)
+- `logLevel` - 'log' | 'debug' | 'info' | 'warn' (default: 'debug')
+- `threshold` - Only log if execution exceeds this ms value
+- `callback` - Receive timing data for analytics/monitoring
 
 ## Deployment
 
